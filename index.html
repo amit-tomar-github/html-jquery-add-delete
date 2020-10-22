@@ -1,0 +1,116 @@
+<html>
+
+<head>
+    <title>jQuery Add / Remove Table Rows</title>
+    <style type="text/css">
+        table {
+            /* width: 100%;
+                margin: 20px 0; */
+            border-collapse: collapse;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #cdcdcd;
+        }
+
+        /* table th, table td{
+                padding: 5px;
+                text-align: left;
+            } */
+    </style>
+
+
+</head>
+
+<body>
+    <form>
+        <input type="text" id="txtId" placeholder="Id">
+        <input type="text" id="txtName" placeholder="Name">
+        <input type="button" class="add-row" value="Save">
+    </form>
+    <table id="tblData">
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th>Id</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+
+</body>
+<script src="js/jquery-3.3.1.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var isedit = false;
+        var selectedId = "";
+        $(".add-row").click(function () {
+            var id = $("#txtId").val();
+            var name = $("#txtName").val();
+            //When new row is added
+            if (isedit == false) {
+                if (IsIdExist(id) == false) {
+                    var markup = "<tr><td><input type='button' class='btn-Del' value='Delete'></td><td><input type='button' class='btn-Edit' value='Edit'></td><td class='cell-id'>" + id + "</td><td class='cell-name'>" + name + "</td></tr>";
+                    $("table tbody").append(markup);
+                }
+                else {
+                    alert("Id already exist!");
+                }
+            }
+            else //When row is updated
+            {
+                $("#tblData tr").each(function () {
+                    var oldId = $(this).find(".cell-id").html();
+                    if (oldId == selectedId) {
+                        $(this).find(".cell-id").html(id);
+                        $(this).find(".cell-name").html(name);
+                        return false;
+                    }
+                });
+            }
+            //reset
+            $("#txtId").val("");
+            $("#txtName").val("");
+            $("#txtId").removeAttr("disabled");
+            isedit = false;
+            selectedId = "";
+        });
+
+        // Find and remove selected table rows
+        $('#tblData').on('click', '.btn-Del', function (e) {
+            $(this).parents("tr").remove();
+
+        });
+
+        //Edit Selected Row
+        $('#tblData').on('click', '.btn-Edit', function (e) {
+            var id = $(this).parents("tr").find(".cell-id").html();
+            var name = $(this).parents("tr").find(".cell-name").html();
+            $("#txtId").val(id);
+            $("#txtName").val(name);
+            $('#txtId').attr("disabled", "disabled");
+            isedit = true;
+            selectedId = id;
+        });
+    });
+
+    function IsIdExist(Id) {
+        var exist = false;
+        $("#tblData tr").each(function () {
+            var oldId = $(this).find(".cell-id").html();
+            if (oldId == Id) {
+                exist = true;
+                return false;
+            }
+        });
+        return exist;
+    }
+</script>
+
+</html>
